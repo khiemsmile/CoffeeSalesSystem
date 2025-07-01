@@ -10,20 +10,13 @@ public class Program
 
         var cache = new DrinkCache();
 
-        var latteToppings = new List<Topping> {
-            new Topping("Milk"),
-            new Topping("Whipped Cream")
-        };
-        var mochaToppings = new List<Topping> {
-            new Topping("Caramel")
-        };
-
-        var drink1 = cache.GetDrink("Latte", latteToppings);
-        var drink2 = cache.GetDrink("Mocha", mochaToppings);
-
+        var drink1 = cache.GetDrink(new Milk(new Sugar(new Cappuccino())));
+        var drink2 = cache.GetDrink(new WhippedCream(new Milk(new Latte())));
+        var drink3 = cache.GetDrink(new WhippedCream(new Milk(new Latte())));
         var order = new Order(CustomerType.Loyal);
         order.AddItem(drink1);
         order.AddItem(drink2);
+        order.AddItem(drink3);
 
         var processor = new OrderProcessorFacade();
         processor.Process(order);

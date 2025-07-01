@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace CoffeeSalesSystem
 {
@@ -12,84 +13,103 @@ namespace CoffeeSalesSystem
         int GetPrice();
     }
 
-    public class Coffee : IDrink
+    public class Latte : IDrink
     {
-        public string Name { get; }
-        public int BasePrice { get; }
-        public List<Topping> Toppings { get; } = new();
-
-        public Coffee(string name)
-        {
-            Name = name;
-            BasePrice = MenuPrices.BaseDrinkPrices[name];
-        }
-
-        public void AddTopping(Topping topping)
-        {
-            Toppings.Add(topping);
-        }
-
-        public string GetDescription()
-        {
-            if (!Toppings.Any()) return Name;
-            return $"{Name} with {string.Join(", ", Toppings.Select(t => t.Name))}";
-        }
-
-        public int GetPrice()
-        {
-            return BasePrice + Toppings.Sum(t => t.Price);
-        }
+        public string GetDescription() => "Latte";
+        public int GetPrice() => MenuPrices.BaseDrinkPrices["Latte"];
     }
 
-    public class Topping
+    public class Espresso : IDrink
     {
-        public string Name { get; }
-        public int Price { get; }
-
-        public Topping(string name)
-        {
-            Name = name;
-            Price = MenuPrices.ToppingPrices[name];
-        }
+        public string GetDescription() => "Espresso";
+        public int GetPrice() => MenuPrices.BaseDrinkPrices["Espresso"];
     }
+
+    public class Mocha : IDrink
+    {
+        public string GetDescription() => "Mocha";
+        public int GetPrice() => MenuPrices.BaseDrinkPrices["Espresso"];
+    }
+
+    public class Cappuccino : IDrink
+    {
+        public string GetDescription() => "Cappuccino";
+        public int GetPrice() => MenuPrices.BaseDrinkPrices["Espresso"];
+    }
+    public class Americano : IDrink
+    {
+        public string GetDescription() => "Americano";
+        public int GetPrice() => MenuPrices.BaseDrinkPrices["Espresso"];
+    }
+
+    public abstract class ToppingDecorator : IDrink
+    {
+        protected IDrink coffee;
+
+        public ToppingDecorator(IDrink coffee)
+        {
+            this.coffee = coffee;
+        }
+
+        public abstract string GetDescription();
+        public abstract int GetPrice();
+    }
+
+    public class Milk : ToppingDecorator
+    {
+        public Milk(IDrink coffee) : base(coffee) { }
+        public override string GetDescription() => coffee.GetDescription() + ", Milk";
+        public override int GetPrice() => coffee.GetPrice() + MenuPrices.ToppingPrices["Milk"];
+    }
+
+    public class WhippedCream : ToppingDecorator
+    {
+        public WhippedCream(IDrink coffee) : base(coffee) { }
+        public override string GetDescription() => coffee.GetDescription() + ", Whipped Cream";
+        public override int GetPrice() => coffee.GetPrice() + MenuPrices.ToppingPrices["Whipped Cream"];
+    }
+
+    public class Caramel : ToppingDecorator
+    {
+        public Caramel(IDrink coffee) : base(coffee) { }
+        public override string GetDescription() => coffee.GetDescription() + ", Caramel";
+        public override int GetPrice() => coffee.GetPrice() + MenuPrices.ToppingPrices["Caramel"];
+    }
+
+    public class Sugar : ToppingDecorator
+    {
+        public Sugar(IDrink coffee) : base(coffee) { }
+        public override string GetDescription() => coffee.GetDescription() + ", Sugar";
+        public override int GetPrice() => coffee.GetPrice() + MenuPrices.ToppingPrices["Sugar"];
+    }
+    public class Vanilla : ToppingDecorator
+    {
+        public Vanilla(IDrink coffee) : base(coffee) { }
+        public override string GetDescription() => coffee.GetDescription() + ", Vanilla";
+        public override int GetPrice() => coffee.GetPrice() + MenuPrices.ToppingPrices["Vanilla"];
+    }
+
 
     public class DrinkCache
     {
         private Dictionary<string, IDrink> _drinkCache = new();
 
-        public IDrink GetDrink(string baseName, List<Topping> toppings)
+        public IDrink GetDrink(IDrink drink)
         {
-            string key = baseName + "-" + string.Join("+", toppings.Select(t => t.Name));
+            string key = drink.GetDescription();
+
             if (!_drinkCache.ContainsKey(key))
             {
-                var coffee = new Coffee(baseName);
-                foreach (var t in toppings)
-                    coffee.AddTopping(t);
-                _drinkCache[key] = coffee;
+                _drinkCache[key] = drink;
+                Console.WriteLine($"[CACHE MISS] Tạo mới và lưu: {key}");
             }
+            else
+            {
+                Console.WriteLine($"[CACHE HIT] Dùng lại: {key}");
+            }
+
             return _drinkCache[key];
         }
-    }
-
-    public static class MenuPrices
-    {
-        public static Dictionary<string, int> BaseDrinkPrices = new()
-        {
-            {"Espresso", 25000},
-            {"Americano", 30000},
-            {"Latte", 35000},
-            {"Cappuccino", 40000},
-            {"Mocha", 45000}
-        };
-
-        public static Dictionary<string, int> ToppingPrices = new()
-        {
-            {"Milk", 5000},
-            {"Sugar", 2000},
-            {"Whipped Cream", 8000},
-            {"Caramel", 10000},
-            {"Vanilla", 8000}
-        };
     }
 
 }

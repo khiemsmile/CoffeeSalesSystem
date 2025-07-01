@@ -17,6 +17,27 @@ namespace CoffeeSalesSystem
         List<string> GetToppings(CustomerType type);
     }
 
+    public static class MenuPrices
+    {
+        public static Dictionary<string, int> BaseDrinkPrices = new()
+        {
+            {"Espresso", 25000},
+            {"Americano", 30000},
+            {"Latte", 35000},
+            {"Cappuccino", 40000},
+            {"Mocha", 45000}
+        };
+
+        public static Dictionary<string, int> ToppingPrices = new()
+        {
+            {"Milk", 5000},
+            {"Sugar", 2000},
+            {"Whipped Cream", 8000},
+            {"Caramel", 10000},
+            {"Vanilla", 8000}
+        };
+    }
+
     public class RealMenuService : IMenuService
     {
         public List<string> GetDrinks(CustomerType type)
