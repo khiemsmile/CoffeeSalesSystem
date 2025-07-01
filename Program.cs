@@ -11,11 +11,11 @@ public class Program
         var cache = new DrinkCache();
 
         var latteToppings = new List<Topping> {
-            new Topping("Milk", 5000),
-            new Topping("Whipped Cream", 8000)
+            new Topping("Milk"),
+            new Topping("Whipped Cream")
         };
         var mochaToppings = new List<Topping> {
-            new Topping("Caramel", 10000)
+            new Topping("Caramel")
         };
 
         var drink1 = cache.GetDrink("Latte", latteToppings);

@@ -18,10 +18,10 @@ namespace CoffeeSalesSystem
         public int BasePrice { get; }
         public List<Topping> Toppings { get; } = new();
 
-        public Coffee(string name, int price)
+        public Coffee(string name)
         {
             Name = name;
-            BasePrice = price;
+            BasePrice = MenuPrices.BaseDrinkPrices[name];
         }
 
         public void AddTopping(Topping topping)
@@ -46,10 +46,10 @@ namespace CoffeeSalesSystem
         public string Name { get; }
         public int Price { get; }
 
-        public Topping(string name, int price)
+        public Topping(string name)
         {
             Name = name;
-            Price = price;
+            Price = MenuPrices.ToppingPrices[name];
         }
     }
 
@@ -62,7 +62,7 @@ namespace CoffeeSalesSystem
             string key = baseName + "-" + string.Join("+", toppings.Select(t => t.Name));
             if (!_drinkCache.ContainsKey(key))
             {
-                var coffee = new Coffee(baseName, MenuPrices.BaseDrinkPrices[baseName]);
+                var coffee = new Coffee(baseName);
                 foreach (var t in toppings)
                     coffee.AddTopping(t);
                 _drinkCache[key] = coffee;
